@@ -17,20 +17,20 @@ class Yahoo
      * Currency pair symbol. E.g. BTC-USD
      * @var string
      */
-    private $symbol;
+    private $_symbol;
 
     /**
      * Start date for the values to retrieve. Unix timestamp.
      * Historical data initial point is Sep. 16 2014 (1410908400)
      * @val int
      */
-    private $startDate;
+    private $_startDate;
 
     /**
      * End date for the values to retrieve. Unix timestamp.
      * @var int
      */
-    private $endDate;
+    private $_endDate;
 
 
     /**
@@ -48,9 +48,9 @@ class Yahoo
      */
     function __construct(string $symbol, int $startDate, int $endDate, string $interval)
     {
-        $this->symbol = $symbol;
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
+        $this->_symbol = $symbol;
+        $this->_startDate = $startDate;
+        $this->_endDate = $endDate;
         $this->interval = $interval;
     }
 
@@ -93,11 +93,11 @@ class Yahoo
     private function getUrl(): string
     {
         $parameters = array(
-            self::START_KEY => $this->startDate,
-            self::END_KEY => $this->endDate,
+            self::START_KEY => $this->_startDate,
+            self::END_KEY => $this->_endDate,
             self::INTERVAL_KEY => $this->interval
         );
-        return self::ENDPOINT . $this->symbol . '?' . http_build_query($parameters);
+        return self::ENDPOINT . $this->_symbol . '?' . http_build_query($parameters);
     }
 
     /**

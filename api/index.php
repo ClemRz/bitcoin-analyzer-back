@@ -7,5 +7,5 @@ spl_autoload_register(function ($class) {
     include "../{$class}.php";
 });
 
-new Api();
+new Api(file_get_contents('php://input'));
 
