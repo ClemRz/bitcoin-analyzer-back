@@ -47,7 +47,7 @@ class Api
             $endDate = intval($endDate);
 
             //$this->render(array("dataPoints" => array(array("x" => 1595084438, "y" => 227.9326171875), array("x" => 1595085438, "y" => 9227.9326171875))));
-            $connector = new Yahoo($symbol, $startDate, $endDate, "1d"); //1410908400
+            $connector = new Yahoo($symbol, $startDate, $endDate, "1d");
             $this->validate("foo");
             $data = $connector->getData(); // TODO clement fetch from DB, cache if necessary
             $this->render($data);

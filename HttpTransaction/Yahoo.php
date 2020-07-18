@@ -21,7 +21,7 @@ class Yahoo
 
     /**
      * Start date for the values to retrieve. Unix timestamp.
-     * Historical data initial point is Sep. 16 2014 (1410908400)
+     * Historical data initial point is Sep. 16 2014 (1410825600)
      * @val int
      */
     private $_startDate;
@@ -42,7 +42,7 @@ class Yahoo
     /**
      * Yahoo constructor.
      * @param string $symbol the currency pair symbol. E.g. BTC-USD
-     * @param int $startDate the start date for the values to retrieve. Unix timestamp. Historical data initial point is Sep. 16 2014 (1410843600)
+     * @param int $startDate the start date for the values to retrieve. Unix timestamp. Historical data initial point is Sep. 16 2014 (1410825600)
      * @param int $endDate the end date for the values to retrieve. Unix timestamp.
      * @param string $interval the interval between the values to retrieve. Supported values are 1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo
      */

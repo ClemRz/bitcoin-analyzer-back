@@ -4,7 +4,7 @@ namespace Validator;
 
 class ParametersValidator
 {
-    private const ORIGIN_OF_TIME = 1410843600; // Unix timestamp in milliseconds, Sep. 16 2014;
+    private const ORIGIN_OF_TIME = 1410825600; // Unix timestamp in milliseconds, Sep. 16 2014;
     private const SYMBOLS = array("BTC-USD");
 
     /**
@@ -46,17 +46,26 @@ class ParametersValidator
         $startDate = intval($this->_startDate);
         $endDate = intval($this->_endDate);
         if ($startDate >= $endDate) {
-            throw new \Exception("Inconsistencies between startDate ({$startDate}) and endDate ({$endDate}) parameters.");
+            throw new \Exception(sprintf("Inconsistencies between startDate (%s) and endDate (%s) parameters.", $this->formatDate($startDate), $this->formatDate($endDate)));
         }
-        $nowUtc = time();
-        if ($endDate > time()) {
-            throw new \Exception("Cannot use date in the future, make sure the dates are expressed in UTC: endDate: {$endDate} now: {$nowUtc}.");
+        $endOfTodayUtc = strtotime("tomorrow", gmmktime()) - 1;
+        if ($endDate > $endOfTodayUtc) {
+            throw new \Exception(sprintf("Cannot use date in the future, make sure the dates are expressed in UTC. EndDate: %s now: %s.", $this->formatDate($endDate), $this->formatDate(time())));
         }
         if ($startDate < self::ORIGIN_OF_TIME) {
-            throw new \Exception("Cannot use date ({$startDate}) before initial dataPoint: " . self::ORIGIN_OF_TIME);
+            throw new \Exception(sprintf("Cannot use date (%s) before initial dataPoint: %s.",$this->formatDate($startDate), $this->formatDate(self::ORIGIN_OF_TIME)));
         }
         if (!in_array($this->_symbol, self::SYMBOLS)) {
             throw new \Exception("Invalid symbol ({$this->_symbol}), available values are: " . join(", ", self::SYMBOLS));
         }
+    }
+
+    /**
+     * @param int $unixTimestamp
+     * @return false|string
+     */
+    private function formatDate(int $unixTimestamp)
+    {
+        return date("M j G:i:s Y T", $unixTimestamp);
     }
 }
