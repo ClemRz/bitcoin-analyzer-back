@@ -4,7 +4,7 @@ namespace Validator;
 
 class ParametersValidator
 {
-    private const INITIAL_DATE = 1410908400;
+    private const ORIGIN_OF_TIME = 1410843600; // Unix timestamp in milliseconds, Sep. 16 2014;
     private const SYMBOLS = array("BTC-USD");
 
     /**
@@ -52,8 +52,8 @@ class ParametersValidator
         if ($endDate > time()) {
             throw new \Exception("Cannot use date in the future, make sure the dates are expressed in UTC: endDate: {$endDate} now: {$nowUtc}.");
         }
-        if ($startDate < self::INITIAL_DATE) {
-            throw new \Exception("Cannot use date ({$startDate}) before initial dataPoint: " . self::INITIAL_DATE);
+        if ($startDate < self::ORIGIN_OF_TIME) {
+            throw new \Exception("Cannot use date ({$startDate}) before initial dataPoint: " . self::ORIGIN_OF_TIME);
         }
         if (!in_array($this->_symbol, self::SYMBOLS)) {
             throw new \Exception("Invalid symbol ({$this->_symbol}), available values are: " . join(", ", self::SYMBOLS));
