@@ -1,4 +1,5 @@
 <?php
+
 use Api\Api;
 
 require "../vendor/autoload.php";

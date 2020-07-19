@@ -2,6 +2,10 @@
 
 namespace HttpTransaction;
 
+use Exception;
+use Exceptions\FormatHttpTransactionException;
+use Exceptions\ThirdPartyHttpTransactionException;
+
 /**
  * Class Yahoo
  * @package HttpTransaction
@@ -57,7 +61,7 @@ class Yahoo
     /**
      * Returns Yahoo's data transformed into the API format
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function getData()
     {
@@ -103,59 +107,55 @@ class Yahoo
     /**
      * Triggers an exception if there is anything wrong with the data received
      * @param $data
-     * @throws \Exception
+     * @throws Exception
      */
     private function checkForErrors($data): void
     {
         if (is_null($data)) {
-            throw new \Exception("Unexpected error: no response or bad response format.");
+            throw new ThirdPartyHttpTransactionException("no response or bad response format (expecting json)");
         }
         if (!is_array($data)) {
-            $type = gettype($data);
-            throw new \Exception("Unexpected format: expected array, found {$type} instead.");
+            throw new FormatHttpTransactionException(sprintf("expected array, found %s instead", gettype($data)));
         }
         if (!array_key_exists("chart", $data)) {
-            throw new \Exception("Unexpected format: expected key 'chart' not found.");
+            throw new FormatHttpTransactionException("expected key 'chart' not found");
         }
         $chart = $data["chart"];
         if (array_key_exists("error", $chart)) {
             $error = $chart["error"];
             if (!is_null($error)) {
-                throw new \Exception("Third party error: {$error["code"]}: {$error["description"]}");
+                throw new ThirdPartyHttpTransactionException("{$error["code"]}: {$error["description"]}");
             }
         }
         if (!array_key_exists("result", $chart)) {
-            throw new \Exception("Unexpected format: expected key 'result' not found.");
+            throw new FormatHttpTransactionException("expected key 'result' not found");
         }
         $result = $chart["result"];
         if (count($result) !== 1) {
-            throw new \Exception("Unexpected format: no entries in 'result' found.");
+            throw new FormatHttpTransactionException("no entries in 'result' found");
         }
         $root = $result[0];
         if (!array_key_exists("timestamp", $root)) {
-            throw new \Exception("Unexpected format: expected key 'timestamp' not found.");
+            throw new FormatHttpTransactionException("expected key 'timestamp' not found");
         }
         $timestamp = $root["timestamp"];
-        if (count($timestamp) == 0) {
-            throw new \Exception("No values found for the matching search parameters.");
-        }
         if (!array_key_exists("indicators", $root)) {
-            throw new \Exception("Unexpected format: expected key 'indicators' not found.");
+            throw new FormatHttpTransactionException("expected key 'indicators' not found");
         }
         $indicators = $root["indicators"];
         if (!array_key_exists("quote", $indicators)) {
-            throw new \Exception("Unexpected format: expected key 'quote' not found.");
+            throw new FormatHttpTransactionException("expected key 'quote' not found");
         }
         $quote = $indicators["quote"];
         if (count($quote) !== 1) {
-            throw new \Exception("Unexpected format: no entries in 'quote' found.");
+            throw new FormatHttpTransactionException("no entries in 'quote' found");
         }
         if (!array_key_exists("close", $quote[0])) {
-            throw new \Exception("Unexpected format: expected key 'close' not found.");
+            throw new FormatHttpTransactionException("expected key 'close' not found");
         }
         $close = $quote[0]["close"];
         if (count($close) !== count($timestamp)) {
-            throw new \Exception("Unexpected content: there should be as many items in 'close' as in 'timestamp'.");
+            throw new FormatHttpTransactionException("there should be as many items in 'close' as in 'timestamp'");
         }
     }
 

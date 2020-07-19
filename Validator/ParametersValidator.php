@@ -2,6 +2,9 @@
 
 namespace Validator;
 
+use Exceptions\InconsistencyValidationException;
+use Exceptions\WrongValueValidationException;
+
 class ParametersValidator
 {
     private const SYMBOLS = array("BTC-USD");
@@ -40,33 +43,34 @@ class ParametersValidator
 
     /**
      * Check all the fields for consistency
-     * @throws \Exception
+     * @throws WrongValueValidationException
+     * @throws InconsistencyValidationException
      */
     public function validate()
     {
         if (!is_numeric($this->_startDate)) {
-            throw new \Exception("Wrong value for startDate parameter: {$this->_startDate}.");
+            throw new WrongValueValidationException("startDate");
         }
         if (!is_numeric($this->_endDate)) {
-            throw new \Exception("Wrong value for endDate parameter: {$this->_endDate}.");
+            throw new WrongValueValidationException("endDate");
         }
         if (!is_string($this->_symbol)) {
-            throw new \Exception("Wrong value for symbol parameter: {$this->_symbol}.");
+            throw new WrongValueValidationException("symbol");
         }
         $startDate = intval($this->_startDate);
         $endDate = intval($this->_endDate);
         if ($startDate >= $endDate) {
-            throw new \Exception(sprintf("Inconsistencies between startDate (%s) and endDate (%s) parameters.", $this->formatDate($startDate), $this->formatDate($endDate)));
+            throw new InconsistencyValidationException("startDate is older than endDate");
         }
         $endOfTodayUtc = strtotime("tomorrow", gmmktime()) - 1;
         if ($endDate > $endOfTodayUtc) {
-            throw new \Exception(sprintf("Cannot use date in the future, make sure the dates are expressed in UTC. EndDate: %s now: %s.", $this->formatDate($endDate), $this->formatDate(time())));
+            throw new InconsistencyValidationException("endDate is in the future");
         }
         if ($startDate < $this->_originOfTime) {
-            throw new \Exception(sprintf("Cannot use date (%s) before initial dataPoint: %s.",$this->formatDate($startDate), $this->formatDate($this->_originOfTime)));
+            throw new InconsistencyValidationException("startDate is before initial dataPoint ({$this->formatDate($this->_originOfTime)})");
         }
         if (!in_array($this->_symbol, self::SYMBOLS)) {
-            throw new \Exception("Invalid symbol ({$this->_symbol}), available values are: " . join(", ", self::SYMBOLS));
+            throw new WrongValueValidationException("symbol. Available values are: " . join(", ", self::SYMBOLS));
         }
     }
 
@@ -76,6 +80,6 @@ class ParametersValidator
      */
     private function formatDate(int $unixTimestamp)
     {
-        return date("M j G:i:s Y T", $unixTimestamp);
+        return date("M j Y", $unixTimestamp);
     }
 }

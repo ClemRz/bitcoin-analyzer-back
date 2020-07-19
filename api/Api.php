@@ -3,6 +3,9 @@
 
 namespace Api;
 
+use Exceptions\ApiException;
+use Exceptions\MissingParameterApiException;
+use Exceptions\ValidationException;
 use HttpTransaction\Yahoo;
 use Validator\ParametersValidator;
 
@@ -20,20 +23,20 @@ class Api
     {
         try {
             if (!$json) {
-                throw new \Exception("Missing parameters.");
+                throw new MissingParameterApiException("none provided");
             }
             $parameters = json_decode($json, true);
             $startDate = $parameters["startDate"];
             if (empty($startDate)) {
-                throw new \Exception("Missing parameter: startDate.");
+                throw new MissingParameterApiException("startDate");
             }
             $endDate = $parameters["endDate"];
             if (empty($endDate)) {
-                throw new \Exception("Missing parameter: endDate.");
+                throw new MissingParameterApiException("endDate");
             }
             $symbol = $parameters["symbol"];
             if (empty($symbol)) {
-                throw new \Exception("Missing parameter: symbol.");
+                throw new MissingParameterApiException("symbol");
             }
 
             $validator = new ParametersValidator($startDate, $endDate, $symbol, Yahoo::BTC_ORIGIN_OF_TIME);
@@ -48,8 +51,11 @@ class Api
             $db->orderBy("timestamp", "asc");
             $data = $db->get($tableName);
             $this->render($data);
-        } catch (\Exception $e) {
-            $this->render($this->getErrorResponse($e)); //TODO clement only one type of errors, obfuscate system-sensitive ones
+        } catch (ApiException | ValidationException $e) {
+            $this->render($this->getErrorResponse($e));
+        } catch (\Throwable $e) {
+            // Hide the details of those from the WWW
+            $this->render(Array("error" => Array()));
         }
     }
 
@@ -61,6 +67,9 @@ class Api
 
     private function getErrorResponse(\Exception $e): array
     {
-        return array("error" => $e->getMessage());
+        return Array("error" => Array(
+            "message" => $e->getMessage(),
+            "code" => $e->getCode()
+        ));
     }
 }
