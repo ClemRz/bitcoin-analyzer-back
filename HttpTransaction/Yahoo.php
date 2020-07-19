@@ -12,6 +12,7 @@ class Yahoo
     private const START_KEY = 'period1';
     private const END_KEY = 'period2';
     private const INTERVAL_KEY = 'interval';
+    public const BTC_ORIGIN_OF_TIME = 1410825600; // First data point is Sep. 16 2014 (1410825600)
 
     /**
      * Currency pair symbol. E.g. BTC-USD
@@ -21,7 +22,6 @@ class Yahoo
 
     /**
      * Start date for the values to retrieve. Unix timestamp.
-     * Historical data initial point is Sep. 16 2014 (1410825600)
      * @val int
      */
     private $_startDate;
@@ -42,11 +42,11 @@ class Yahoo
     /**
      * Yahoo constructor.
      * @param string $symbol the currency pair symbol. E.g. BTC-USD
-     * @param int $startDate the start date for the values to retrieve. Unix timestamp. Historical data initial point is Sep. 16 2014 (1410825600)
+     * @param int $startDate the start date for the values to retrieve. Unix timestamp.
      * @param int $endDate the end date for the values to retrieve. Unix timestamp.
-     * @param string $interval the interval between the values to retrieve. Supported values are 1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo
+     * @param string $interval the interval between the values to retrieve.
      */
-    function __construct(string $symbol, int $startDate, int $endDate, string $interval)
+    public function __construct(string $symbol, int $startDate, int $endDate, string $interval)
     {
         $this->_symbol = $symbol;
         $this->_startDate = $startDate;
