@@ -42,18 +42,15 @@ class Api
             $startDate = intval($startDate);
             $endDate = intval($endDate);
 
-            //$this->render(array("dataPoints" => array(array("x" => 1595084438, "y" => 227.9326171875), array("x" => 1595085438, "y" => 9227.9326171875))));
-            $connector = new Yahoo($symbol, $startDate, $endDate, "1d");
-            $data = $connector->getData(); // TODO clement fetch from DB, cache if necessary
+            $tableName = "BTCUSD";
+            $db = new \MysqliDb(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+            $db->where("timestamp", Array($startDate, $endDate), "BETWEEN");
+            $db->orderBy("timestamp", "asc");
+            $data = $db->get($tableName);
             $this->render($data);
         } catch (\Exception $e) {
-            $this->render($this->getErrorResponse($e));
+            $this->render($this->getErrorResponse($e)); //TODO clement only one type of errors, obfuscate system-sensitive ones
         }
-    }
-
-    private function fetchData(): void
-    {
-        return;
     }
 
     private function render($data): void

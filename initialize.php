@@ -12,16 +12,16 @@
 
 use HttpTransaction\Yahoo;
 
-require __DIR__ . '/vendor/autoload.php';
-require __DIR__ . '/config.php';
+require __DIR__ . "/vendor/autoload.php";
+require __DIR__ . "/config.php";
 spl_autoload_register(function ($class) {
-    $class = str_replace('\\', '/', $class);
+    $class = str_replace("\\", "/", $class);
     include __DIR__ . "/{$class}.php";
 });
 
 try {
     echo(sprintf("Connecting to db %s with user %s on %s." . PHP_EOL, DB_NAME, DB_USER, DB_HOST));
-    $db = new MysqliDb (DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+    $db = new MysqliDb(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
     echo("Connected" . PHP_EOL);
     $tableName = "BTCUSD";
     echo("Checking if the table {$tableName} is empty." . PHP_EOL);
