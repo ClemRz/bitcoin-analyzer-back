@@ -14,7 +14,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `bitcoin`
 --
-CREATE DATABASE IF NOT EXISTS `bitcoin` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+CREATE DATABASE IF NOT EXISTS `bitcoin` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `bitcoin`;
 
 -- --------------------------------------------------------
@@ -27,5 +27,5 @@ CREATE TABLE IF NOT EXISTS `BTCUSD` (
   `timestamp` bigint NOT NULL,
   `close` decimal(13,3) DEFAULT NULL,
   PRIMARY KEY (`timestamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 COMMIT;

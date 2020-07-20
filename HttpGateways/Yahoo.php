@@ -1,6 +1,6 @@
 <?php
 
-namespace HttpTransaction;
+namespace HttpGateways;
 
 use Exception;
 use Exceptions\FormatHttpTransactionException;
@@ -8,14 +8,14 @@ use Exceptions\ThirdPartyHttpTransactionException;
 
 /**
  * Class Yahoo
- * @package HttpTransaction
+ * @package HttpGateways
  */
 class Yahoo
 {
-    private const ENDPOINT = 'https://query2.finance.yahoo.com/v8/finance/chart/';
-    private const START_KEY = 'period1';
-    private const END_KEY = 'period2';
-    private const INTERVAL_KEY = 'interval';
+    private const ENDPOINT = "https://query2.finance.yahoo.com/v8/finance/chart/";
+    private const START_KEY = "period1";
+    private const END_KEY = "period2";
+    private const INTERVAL_KEY = "interval";
     public const BTC_ORIGIN_OF_TIME = 1410825600; // First data point is Sep. 16 2014 (1410825600)
 
     /**
@@ -83,11 +83,11 @@ class Yahoo
         $dataPoints = array();
         foreach ($timestamps as $i => $timestamp) {
             array_push($dataPoints, array(
-                "x" => $timestamp,
-                "y" => $closeQuotes[$i]
+                "timestamp" => $timestamp,
+                "close" => $closeQuotes[$i]
             ));
         }
-        return array("dataPoints" => $dataPoints);
+        return $dataPoints;
     }
 
     /**
@@ -101,7 +101,7 @@ class Yahoo
             self::END_KEY => $this->_endDate,
             self::INTERVAL_KEY => $this->interval
         );
-        return self::ENDPOINT . $this->_symbol . '?' . http_build_query($parameters);
+        return self::ENDPOINT . $this->_symbol . "?" . http_build_query($parameters);
     }
 
     /**
