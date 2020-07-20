@@ -30,7 +30,7 @@ $ # add this line: 0 6 * * * php path/to/scripts/update.php
 
 ### Dependencies
 
-This application needs PHP 7.3 and MySQL 8.0.
+This application needs `PHP 7.3` and `MySQL 8.0`.
 
 Dependencies are managed via [Composer](https://getcomposer.org/) and are listed in `composer.json`.
 
