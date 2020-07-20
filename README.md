@@ -1,10 +1,36 @@
 # Backend for bitcoin-analyzer project
 
-## Setup
+By [Clément Ronzon](https://www.linkedin.com/in/clemrz/).
+
+Licensed under [MIT License](https://choosealicense.com/licenses/mit/)
+
+## Deployment
+
+### tl;dr:
+
+```shell script
+$ git clone https://github.com/ClemRz/bitcoin-analyzer-back.git .
+$ php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+$ php -r "if (hash_file('sha384', 'composer-setup.php') === 'e5325b19b381bfd88ce90a5ddb7823406b2a38cff6bb704b0acc289a09c8128d4a8ce2bbafcd1fcbdc38666422fe2806') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+$ php composer-setup.php
+$ php -r "unlink('composer-setup.php');"
+$ php composer.phar install
+$ mysql -uroot -p
+mysql> CREATE DATABASE `bitcoin` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+mysql> CREATE USER 'db_user'@'db_host' identified by 'db_password';
+mysql> GRANT ALL on bitcoin.* to 'db_user'@'db_host';
+mysql> quit
+$ mv .env.example .env
+$ vim .env
+$ mysql -udb_user -p < scripts/initialize.sql
+$ php scripts/initialize.php
+$ crontab -e
+$ # add this line: 0 6 * * * php path/to/scripts/update.php
+```
 
 ### Dependencies
 
-This application runs with PHP 7.3.
+This application needs PHP 7.3 and MySQL 8.0.
 
 Dependencies are managed via [Composer](https://getcomposer.org/) and are listed in `composer.json`.
 
