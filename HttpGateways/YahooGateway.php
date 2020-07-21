@@ -41,7 +41,7 @@ class YahooGateway
      * Interval between the values to retrieve. Supported values are 1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo
      * @var string
      */
-    private $interval;
+    private $_interval;
 
     /**
      * Yahoo constructor.
@@ -55,7 +55,7 @@ class YahooGateway
         $this->_symbol = $symbol;
         $this->_startDate = $startDate;
         $this->_endDate = $endDate;
-        $this->interval = $interval;
+        $this->_interval = $interval;
     }
 
     /**
@@ -78,7 +78,7 @@ class YahooGateway
         $parameters = Array(
             self::START_KEY => $this->_startDate,
             self::END_KEY => $this->_endDate,
-            self::INTERVAL_KEY => $this->interval
+            self::INTERVAL_KEY => $this->_interval
         );
         return self::ENDPOINT . $this->_symbol . "?" . http_build_query($parameters);
     }

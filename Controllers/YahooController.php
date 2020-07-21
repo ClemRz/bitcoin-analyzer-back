@@ -36,7 +36,7 @@ class YahooController
         "3mo" => -1
     );
 
-    private $interval;
+    private $_interval;
 
     /**
      * YahooController constructor.
@@ -48,7 +48,7 @@ class YahooController
         if (!array_key_exists($interval, self::INTERVAL_TIME_MAP)) {
             throw new Exception("Provided interval is not available.");
         }
-        $this->interval = $interval;
+        $this->_interval = $interval;
     }
 
     /**
@@ -61,13 +61,13 @@ class YahooController
     public function getAllPossibleData(string $symbol): Array
     {
         $endDate = time();
-        $time = self::INTERVAL_TIME_MAP[$this->interval];
+        $time = self::INTERVAL_TIME_MAP[$this->_interval];
         if ($time < 0) { // Special case where the available data is for all times
             $startDate = YahooGateway::BTC_ORIGIN_OF_TIME;
         } else {
             $startDate = $endDate - $time;
         }
-        return $this->getData($startDate, $endDate, $symbol, $this->interval);
+        return $this->getData($startDate, $endDate, $symbol, $this->_interval);
     }
 
 

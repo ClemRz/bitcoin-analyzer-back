@@ -9,7 +9,7 @@ use Exceptions\ThirdPartyHttpTransactionException;
 
 class YahooValidator
 {
-    private $data;
+    private $_data;
 
     /**
      * YahooValidator constructor.
@@ -17,7 +17,7 @@ class YahooValidator
      */
     public function __construct($data)
     {
-        $this->data = $data;
+        $this->_data = $data;
     }
 
     /**
@@ -28,16 +28,16 @@ class YahooValidator
      */
     public function validate(): void
     {
-        if (is_null($this->data)) {
+        if (is_null($this->_data)) {
             throw new ThirdPartyHttpTransactionException("no response or bad response format (expecting json)");
         }
-        if (!is_array($this->data)) {
-            throw new FormatHttpTransactionException(sprintf("expected array, found %s instead", gettype($this->data)));
+        if (!is_array($this->_data)) {
+            throw new FormatHttpTransactionException(sprintf("expected array, found %s instead", gettype($this->_data)));
         }
-        if (!array_key_exists("chart", $this->data)) {
+        if (!array_key_exists("chart", $this->_data)) {
             throw new FormatHttpTransactionException("expected key 'chart' not found");
         }
-        $chart = $this->data["chart"];
+        $chart = $this->_data["chart"];
         if (array_key_exists("error", $chart)) {
             $error = $chart["error"];
             if (!is_null($error)) {

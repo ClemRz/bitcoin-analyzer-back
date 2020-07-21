@@ -27,14 +27,14 @@ class BtcUsdController
     private const HOUR = 60 * self::MINUTE;
     private const DAY = 24 * self::HOUR;
 
-    private $db;
-    private $method;
-    private $uri;
-    private $startDate;
-    private $endDate;
-    private $format;
+    private $_db;
+    private $_method;
+    private $_uri;
+    private $_startDate;
+    private $_endDate;
+    private $_format;
 
-    private $btcUsdGateway;
+    private $_btcUsdGateway;
 
     /**
      * BtcUsdController constructor.
@@ -45,11 +45,11 @@ class BtcUsdController
      */
     public function __construct(MysqliDb $db, string $method, string $uri)
     {
-        $this->db = $db;
-        $this->method = $method;
-        $this->uri = $uri;
+        $this->_db = $db;
+        $this->_method = $method;
+        $this->_uri = $uri;
 
-        $this->btcUsdGateway = new BtcUsdGateway($db);
+        $this->_btcUsdGateway = new BtcUsdGateway($db);
     }
 
     /**
@@ -58,37 +58,37 @@ class BtcUsdController
     public function processRequest(): void
     {
         try {
-            $tmpParts = explode("/", $this->uri);
+            $tmpParts = explode("/", $this->_uri);
 
             if (count($tmpParts) < 3 || empty($tmpParts[2])) {
                 throw new MissingParameterApiException("startDate");
             }
-            $this->startDate = $tmpParts[2];
+            $this->_startDate = $tmpParts[2];
 
             if (count($tmpParts) < 4 || empty($tmpParts[3])) {
                 throw new MissingParameterApiException("endDate");
             }
             $tmpParts = explode(".", $tmpParts[3]);
-            $this->endDate = $tmpParts[0];
+            $this->_endDate = $tmpParts[0];
 
             if (count($tmpParts) < 2 || empty($tmpParts[1])) {
                 throw new MissingParameterApiException("format");
             }
-            $this->format = $tmpParts[1];
-            switch ($this->method) {
+            $this->_format = $tmpParts[1];
+            switch ($this->_method) {
                 case "GET":
-                    $data = $this->getEntriesDynamicInterval($this->startDate, $this->endDate);
-                    $this->render($data, $this->format);
+                    $data = $this->getEntriesDynamicInterval($this->_startDate, $this->_endDate);
+                    $this->render($data, $this->_format);
                     break;
                 default:
                     header("HTTP/1.1 404 Not Found");
                     break;
             }
         } catch (ApiException | ValidationException $e) {
-            $this->render($this->getErrorResponse($e), $this->format);
+            $this->render($this->getErrorResponse($e), $this->_format);
         } catch (Throwable $e) {
             // Hide the details of those from the WWW
-            $this->render(Array("error" => Array()), $this->format);
+            $this->render(Array("error" => Array()), $this->_format);
         }
     }
 
@@ -136,8 +136,8 @@ class BtcUsdController
      */
     private function getEntries(int $startDate, int $endDate, string $interval): Array
     {
-        $this->btcUsdGateway->setSuffix($interval);
-        return $this->btcUsdGateway->find($startDate, $endDate);
+        $this->_btcUsdGateway->setSuffix($interval);
+        return $this->_btcUsdGateway->find($startDate, $endDate);
     }
 
     /**
