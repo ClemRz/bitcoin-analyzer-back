@@ -1,7 +1,7 @@
 <?php
 /**
  * Front Controller
-*/
+ */
 
 require("../bootstrap.php");
 

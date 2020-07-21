@@ -113,8 +113,7 @@ class BtcUsdController
         $range = $endDate - $startDate;
         $allData = Array();
 
-        foreach ($this->getRangeIntervalMap() as $interval => $inRange)
-        {
+        foreach ($this->getRangeIntervalMap() as $interval => $inRange) {
             if ($inRange($range)) {
                 $data = $this->getEntries($startDate, $endDate, $interval);
                 $allData = array_merge($data, $allData);

@@ -1,7 +1,7 @@
 <?php
 /**
  * CLI Controller
-*/
+ */
 
 $scriptsWhiteList = Array("initialize", "update");
 
