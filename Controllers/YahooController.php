@@ -58,7 +58,7 @@ class YahooController
      * @return array
      * @throws Exception
      */
-    public function getAllPossibleData(string $symbol): array
+    public function getAllPossibleData(string $symbol): Array
     {
         $endDate = time();
         $time = self::INTERVAL_TIME_MAP[$this->interval];
@@ -106,7 +106,7 @@ class YahooController
         $closeQuotes = $root["indicators"]["quote"][0]["close"];
         $dataPoints = Array();
         foreach ($timestamps as $i => $timestamp) {
-            array_push($dataPoints, array(
+            array_push($dataPoints, Array(
                 "timestamp" => $timestamp,
                 "close" => $closeQuotes[$i]
             ));

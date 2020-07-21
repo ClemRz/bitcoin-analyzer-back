@@ -102,7 +102,7 @@ class BtcUsdController
      * @throws WrongValueValidationException
      * @throws Exception
      */
-    private function getEntriesDynamicInterval($startDate, $endDate): array
+    private function getEntriesDynamicInterval($startDate, $endDate): Array
     {
         $validator = new BctUsdValidator($startDate, $endDate, YahooGateway::BTC_ORIGIN_OF_TIME);
         $validator->validate();
@@ -120,7 +120,7 @@ class BtcUsdController
             }
         }
 
-        usort($allData, array('self', 'compare'));
+        usort($allData, Array('self', 'compare'));
 
         return $allData;
     }
@@ -134,7 +134,7 @@ class BtcUsdController
      * @return array
      * @throws Exception
      */
-    private function getEntries(int $startDate, int $endDate, string $interval): array
+    private function getEntries(int $startDate, int $endDate, string $interval): Array
     {
         $this->btcUsdGateway->setSuffix($interval);
         return $this->btcUsdGateway->find($startDate, $endDate);
@@ -183,7 +183,7 @@ class BtcUsdController
      * @param Exception $e
      * @return array
      */
-    private function getErrorResponse(Exception $e): array
+    private function getErrorResponse(Exception $e): Array
     {
         return Array("error" => Array(
             "message" => $e->getMessage(),
@@ -196,7 +196,7 @@ class BtcUsdController
      *
      * @return array
      */
-    private function getRangeIntervalMap(): array
+    private function getRangeIntervalMap(): Array
     {
         return Array(
             BtcUsdGateway::ONE_MINUTE => function ($range) {

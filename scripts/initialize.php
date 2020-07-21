@@ -45,7 +45,7 @@ function run(MysqliDb $db, string $interval): void
  * @return array
  * @throws Exception
  */
-function getAllPossibleData(string $interval): array
+function getAllPossibleData(string $interval): Array
 {
     echo(sprintf("Fetching %s data from Yahoo with interval %s", YahooGateway::BTC_USD, $interval) . PHP_EOL);
     $controller = new YahooController($interval);

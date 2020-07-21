@@ -75,7 +75,7 @@ class YahooGateway
      */
     private function getUrl(): string
     {
-        $parameters = array(
+        $parameters = Array(
             self::START_KEY => $this->_startDate,
             self::END_KEY => $this->_endDate,
             self::INTERVAL_KEY => $this->interval

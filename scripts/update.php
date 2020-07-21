@@ -74,7 +74,7 @@ function getLastSamplesTimestamp(BtcUsdGateway $gateway): int
  * @return array
  * @throws Exception
  */
-function getData(int $startDate, int $endDate, string $interval): array
+function getData(int $startDate, int $endDate, string $interval): Array
 {
     echo(sprintf(
             "Fetching %s data from Yahoo from %s to %s with interval %s",
