@@ -89,19 +89,3 @@ function getData(int $startDate, int $endDate, string $interval): array
     return $data;
 }
 
-
-try {
-    echo(sprintf("Connecting to db %s with user %s on %s:%d." . PHP_EOL, $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_HOST"], $_ENV["DB_PORT"]));
-    $db = new MysqliDb($_ENV["DB_HOST"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"], $_ENV["DB_NAME"], $_ENV["DB_PORT"]);
-    echo("Connected" . PHP_EOL);
-    $intervals = Array(BtcUsdGateway::ONE_DAY, BtcUsdGateway::ONE_HOUR, BtcUsdGateway::ONE_MINUTE);
-    foreach ($intervals as $interval) {
-        echo("Fetching data with interval {$interval}" . PHP_EOL);
-        run($db, $interval);
-        echo("{$interval} interval data stored." . PHP_EOL);
-    }
-    echo("Success." . PHP_EOL);
-} catch (Exception $e) {
-    exit("Ended with error: {$e->getMessage()}" . PHP_EOL);
-}
-

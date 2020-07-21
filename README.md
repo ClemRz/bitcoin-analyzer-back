@@ -27,9 +27,9 @@ mysql> quit
 $ mv .env.example .env
 $ vim .env
 $ mysql -udb_user -p < scripts/initialize.sql
-$ php scripts/initialize.php
+$ php scripts/run.php initialize
 $ crontab -e
-$ # add this line: 0 6 * * * php path/to/scripts/update.php
+$ # add this line: 0 6 * * * php path/to/scripts/run.php update
 ```
 ### Requirements
 
@@ -56,7 +56,7 @@ Once you have this information rename `.env.example` to `.env` and fill in the d
 Finally run the initialization script that will fetch and store the historical data:
 
 ```shell script
-$ php scripts/initialize.php
+$ php scripts/run.php initialize
 ```
 
 ### Keep the database up to date
@@ -66,12 +66,12 @@ In order for cached values the database to be up to date there is a script that 
 Add the following line in the crontab:
 
 ```shell script
-0 6 * * * php /path/to/scripts/update.php
+0 6 * * * php /path/to/scripts/run.php update
 ```
 
-This will run `scripts/update.php` every day at 6am (cron timezone).
+This will run `scripts/run.php update` every day at 6am (cron timezone).
 
-Make sure cron has disk access and `update.php` is executable.
+Make sure cron has disk access and `run.php` is executable.
 
 ## API documentation
 
