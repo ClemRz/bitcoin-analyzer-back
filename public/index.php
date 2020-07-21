@@ -18,8 +18,8 @@ $symbol = $uriParts[1];
 
 $db = new MysqliDb($_ENV["DB_HOST"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"], $_ENV["DB_NAME"], $_ENV["DB_PORT"]);
 
-switch (strtolower($symbol)) {
-    case "btcusd":
+switch (strtoupper($symbol)) {
+    case BtcUsdController::SYMBOL:
         $controller = new BtcUsdController($db, $method, $_SERVER["REQUEST_URI"]);
         break;
     default:

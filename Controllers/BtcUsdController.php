@@ -21,6 +21,8 @@ use Validators\BctUsdValidator;
  */
 class BtcUsdController
 {
+    public const SYMBOL = "BTCUSD";
+
     private const MINUTE = 60; // seconds
     private const HOUR = 60 * self::MINUTE;
     private const DAY = 24 * self::HOUR;
