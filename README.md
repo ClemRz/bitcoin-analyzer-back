@@ -24,12 +24,12 @@ mysql> CREATE DATABASE `bitcoin` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_u
 mysql> CREATE USER 'db_user'@'db_host' identified by 'db_password';
 mysql> GRANT ALL on bitcoin.* to 'db_user'@'db_host';
 mysql> quit
-$ mv .env.example .env
-$ vim .env
-$ mysql -udb_user -p < scripts/initialize.sql
-$ php scripts/run.php initialize
+$ mv src/.env.example src/.env
+$ vim src/.env
+$ mysql -udb_user -p < src/scripts/initialize.sql
+$ php src/scripts/run.php initialize
 $ crontab -e
-$ # add this line: 0 6 * * * php path/to/scripts/run.php update
+$ # add this line: 0 6 * * * php path/to/src/scripts/run.php update
 ```
 ### Requirements
 
@@ -47,16 +47,16 @@ $ php composer.phar install
 
 ### Initialization of the database
 
-With the client of your choice execute `scripts/initialize.sql`.
+With the client of your choice execute `src/scripts/initialize.sql`.
 This will create the required database, tables and columns.
 
 You will need a MySQL user for this application.
-Once you have this information rename `.env.example` to `.env` and fill in the database access information.
+Once you have this information rename `src/.env.example` to `src/.env` and fill in the database access information.
 
 Finally run the initialization script that will fetch and store the historical data:
 
 ```shell script
-$ php scripts/run.php initialize
+$ php src/scripts/run.php initialize
 ```
 
 ### Keep the database up to date
@@ -66,10 +66,10 @@ In order for cached values the database to be up to date there is a script that 
 Add the following line in the crontab:
 
 ```shell script
-0 6 * * * php /path/to/scripts/run.php update
+0 6 * * * php /path/to/src/scripts/run.php update
 ```
 
-This will run `scripts/run.php update` every day at 6am (cron timezone).
+This will run `src/scripts/run.php update` every day at 6am (cron timezone).
 
 Make sure cron has disk access and `run.php` is executable.
 
