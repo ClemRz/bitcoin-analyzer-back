@@ -1,15 +1,19 @@
 # Backend for bitcoin-analyzer project
 
-By [Clément Ronzon](https://www.linkedin.com/in/clemrz/).
+By [Clément Ronzon](https://www.linkedin.com/in/clemrz/). Licensed under [MIT License](https://choosealicense.com/licenses/mit/).
 
-Licensed under [MIT License](https://choosealicense.com/licenses/mit/)
+This is the back-end implementation of a Bitcoin price analyzer.
+This price analyzer displays a graph with the price trends of the Bitcoin.
+
+The price analyzer fetches historical Bitcoin prices from a public URL (Yahoo). It stores it into a database (cron job). A REST API serves the data to the front-end.
 
 ## Deployment
 
 ### tl;dr:
 
 ```shell script
-$ git clone https://github.com/ClemRz/bitcoin-analyzer-back.git .
+$ git clone https://github.com/ClemRz/bitcoin-analyzer-back.git
+$ cd bitcoin-analyzer-back
 $ php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 $ php -r "if (hash_file('sha384', 'composer-setup.php') === 'e5325b19b381bfd88ce90a5ddb7823406b2a38cff6bb704b0acc289a09c8128d4a8ce2bbafcd1fcbdc38666422fe2806') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 $ php composer-setup.php
@@ -27,10 +31,11 @@ $ php scripts/initialize.php
 $ crontab -e
 $ # add this line: 0 6 * * * php path/to/scripts/update.php
 ```
-
-### Dependencies
+### Requirements
 
 This application needs `PHP 7.3` and `MySQL 8.0`.
+
+### Dependencies
 
 Dependencies are managed via [Composer](https://getcomposer.org/) and are listed in `composer.json`.
 
@@ -43,7 +48,7 @@ $ php composer.phar install
 ### Initialization of the database
 
 With the client of your choice execute `scripts/initialize.sql`.
-This will create the require database (`bitcoin`), table and columns.
+This will create the required database, tables and columns.
 
 You will need a MySQL user for this application.
 Once you have this information rename `.env.example` to `.env` and fill in the database access information.

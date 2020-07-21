@@ -7,8 +7,6 @@ require("../bootstrap.php");
 
 use Controllers\BtcUsdController;
 
-//error_reporting(E_ERROR | E_PARSE);
-
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: OPTIONS,GET,POST,PUT,DELETE");
 header("Access-Control-Max-Age: 3600");

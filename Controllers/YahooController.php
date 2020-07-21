@@ -1,77 +1,98 @@
 <?php
 
-namespace HttpGateways;
+namespace Controllers;
 
 use Exception;
 use Exceptions\FormatHttpTransactionException;
 use Exceptions\ThirdPartyHttpTransactionException;
+use HttpGateways\YahooGateway;
 
 /**
- * Class Yahoo
- * @package HttpGateways
+ * Class YahooController
+ * @package Controllers
  */
-class Yahoo
+class YahooController
 {
-    private const ENDPOINT = "https://query2.finance.yahoo.com/v8/finance/chart/";
-    private const START_KEY = "period1";
-    private const END_KEY = "period2";
-    private const INTERVAL_KEY = "interval";
-    public const BTC_ORIGIN_OF_TIME = 1410825600; // First data point is Sep. 16 2014 (1410825600)
+    private const MINUTE = 60; // seconds
+    private const HOUR = 60 * self::MINUTE;
+    private const DAY = 24 * self::HOUR;
 
     /**
-     * Currency pair symbol. E.g. BTC-USD
-     * @var string
+     * Map of possible intervals and the amount of seconds their are available from today.
+     * @var array
      */
-    private $_symbol;
+    private const INTERVAL_TIME_MAP = Array(
+        "1m" => 7 * self::DAY,
+        "2m" => 60 * self::DAY,
+        "5m" => 60 * self::DAY,
+        "15m" => 60 * self::DAY,
+        "30m" => 60 * self::DAY,
+        "60m" => 729 * self::DAY,
+        "90m" => 60 * self::DAY,
+        "1h" => 729 * self::DAY,
+        "1d" => -1,
+        "5d" => -1,
+        "1wk" => -1,
+        "1mo" => -1,
+        "3mo" => -1
+    );
 
-    /**
-     * Start date for the values to retrieve. Unix timestamp.
-     * @val int
-     */
-    private $_startDate;
-
-    /**
-     * End date for the values to retrieve. Unix timestamp.
-     * @var int
-     */
-    private $_endDate;
-
-
-    /**
-     * Interval between the values to retrieve. Supported values are 1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo
-     * @var string
-     */
     private $interval;
 
     /**
-     * Yahoo constructor.
-     * @param string $symbol the currency pair symbol. E.g. BTC-USD
-     * @param int $startDate the start date for the values to retrieve. Unix timestamp.
-     * @param int $endDate the end date for the values to retrieve. Unix timestamp.
-     * @param string $interval the interval between the values to retrieve.
+     * YahooController constructor.
+     * @param string $interval
+     * @throws Exception
      */
-    public function __construct(string $symbol, int $startDate, int $endDate, string $interval)
+    public function __construct(string $interval)
     {
-        $this->_symbol = $symbol;
-        $this->_startDate = $startDate;
-        $this->_endDate = $endDate;
+        if (!array_key_exists($interval, self::INTERVAL_TIME_MAP)) {
+            throw new Exception("Provided interval is not available.");
+        }
         $this->interval = $interval;
     }
 
     /**
-     * Returns Yahoo's data transformed into the API format
+     * Fetches the maximum amount of data according to the provided interval.
+     *
+     * @param string $symbol
      * @return array
      * @throws Exception
      */
-    public function getData()
+    public function getAllPossibleData(string $symbol): array
     {
-        $data = json_decode($this->getResponse(), true);
+        $endDate = time();
+        $time = self::INTERVAL_TIME_MAP[$this->interval];
+        if ($time < 0) { // Special case where the available data is for all times
+            $startDate = YahooGateway::BTC_ORIGIN_OF_TIME;
+        } else {
+            $startDate = $endDate - $time;
+        }
+        return $this->getData($startDate, $endDate, $symbol, $this->interval);
+    }
+
+
+    /**
+     * Returns Yahoo's data transformed into the API format
+     *
+     * @param int $startDate
+     * @param int $endDate
+     * @param string $symbol
+     * @param string $interval
+     * @return array
+     * @throws Exception
+     */
+    public function getData(int $startDate, int $endDate, string $symbol, string $interval)
+    {
+        $gateway = new YahooGateway($symbol, $startDate, $endDate, $interval);
+        $data = $gateway->getData();
         $this->checkForErrors($data);
         return $this->getTransformedData($data);
     }
 
     /**
-     * Returns the transformed data to match the API format
+     * Adapts the data to the API format
+     *
      * @param $data
      * @return array
      */
@@ -91,21 +112,8 @@ class Yahoo
     }
 
     /**
-     * Builds and returns the URL with the parameters
-     * @return string
-     */
-    private function getUrl(): string
-    {
-        $parameters = array(
-            self::START_KEY => $this->_startDate,
-            self::END_KEY => $this->_endDate,
-            self::INTERVAL_KEY => $this->interval
-        );
-        return self::ENDPOINT . $this->_symbol . "?" . http_build_query($parameters);
-    }
-
-    /**
      * Triggers an exception if there is anything wrong with the data received
+     *
      * @param $data
      * @throws Exception
      */
@@ -158,20 +166,4 @@ class Yahoo
             throw new FormatHttpTransactionException("there should be as many items in 'close' as in 'timestamp'");
         }
     }
-
-    /**
-     * Fetches the data
-     * @return string
-     */
-    private function getResponse(): string
-    {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_URL, $this->getUrl());
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
-    }
 }
-
-

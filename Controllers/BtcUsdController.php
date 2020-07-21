@@ -10,7 +10,7 @@ use Exceptions\MissingParameterApiException;
 use Exceptions\UnsupportedValueApiException;
 use Exceptions\ValidationException;
 use Exceptions\WrongValueValidationException;
-use HttpGateways\Yahoo;
+use HttpGateways\YahooGateway;
 use MysqliDb;
 use Throwable;
 
@@ -20,6 +20,10 @@ use Throwable;
  */
 class BtcUsdController
 {
+    private const MINUTE = 60; // seconds
+    private const HOUR = 60 * self::MINUTE;
+    private const DAY = 24 * self::HOUR;
+
     private $db;
     private $method;
     private $uri;
@@ -27,7 +31,7 @@ class BtcUsdController
     private $endDate;
     private $format;
 
-    private $BtcUsdGateway;
+    private $btcUsdGateway;
 
     /**
      * BtcUsdController constructor.
@@ -42,7 +46,7 @@ class BtcUsdController
         $this->method = $method;
         $this->uri = $uri;
 
-        $this->BtcUsdGateway = new BtcUsdGateway($db);
+        $this->btcUsdGateway = new BtcUsdGateway($db);
     }
 
     /**
@@ -68,10 +72,9 @@ class BtcUsdController
                 throw new MissingParameterApiException("format");
             }
             $this->format = $tmpParts[1];
-
             switch ($this->method) {
                 case "GET":
-                    $data = $this->getEntries($this->startDate, $this->endDate);
+                    $data = $this->getEntriesDynamicInterval($this->startDate, $this->endDate);
                     $this->render($data, $this->format);
                     break;
                 default:
@@ -87,7 +90,7 @@ class BtcUsdController
     }
 
     /**
-     * Validates the dates and look up for the entries in database
+     * Validates the dates and dynamically pull the values with the most adequate interval
      *
      * @param mixed $startDate
      * @param mixed $endDate
@@ -96,16 +99,67 @@ class BtcUsdController
      * @throws WrongValueValidationException
      * @throws Exception
      */
-    private function getEntries($startDate, $endDate): array
+    private function getEntriesDynamicInterval($startDate, $endDate): array
     {
-        $validator = new ParametersValidator($startDate, $endDate, Yahoo::BTC_ORIGIN_OF_TIME);
+        $validator = new ParametersValidator($startDate, $endDate, YahooGateway::BTC_ORIGIN_OF_TIME);
         $validator->validate();
 
         $startDate = intval($startDate);
         $endDate = intval($endDate);
 
-        $btcUsdGateway = new BtcUsdGateway($this->db);
-        return $btcUsdGateway->find($startDate, $endDate);
+        $range = $endDate - $startDate;
+        $allData = Array();
+
+        if ($range <= 2 * self::DAY) {
+            $data = $this->getEntries($startDate, $endDate, BtcUsdGateway::ONE_MINUTE);
+            $allData = array_merge($data, $allData);
+        }
+
+        if ($range <= 7 * self::DAY) {
+            $data = $this->getEntries($startDate, $endDate, BtcUsdGateway::ONE_HOUR);
+            $allData = array_merge($data, $allData);
+        }
+
+        if ($range > 7 * self::DAY) {
+            $data = $this->getEntries($startDate, $endDate, BtcUsdGateway::ONE_DAY);
+            $allData = array_merge($data, $allData);
+        }
+
+        usort($allData, array('self', 'compare'));
+
+        return $allData;
+    }
+
+    /**
+     * Look up for the entries in database matching the provided parameters
+     *
+     * @param int $startDate
+     * @param int $endDate
+     * @param string $interval
+     * @return array
+     * @throws Exception
+     */
+    private function getEntries(int $startDate, int $endDate, string $interval): array
+    {
+        $this->btcUsdGateway->setSuffix($interval);
+        return $this->btcUsdGateway->find($startDate, $endDate);
+    }
+
+    /**
+     * Comparison function for data points sorting
+     *
+     * @param $dataPointA
+     * @param $dataPointB
+     * @return int
+     */
+    private static function compare($dataPointA, $dataPointB): int
+    {
+        $timestampA = $dataPointA["timestamp"];
+        $timestampB = $dataPointB["timestamp"];
+        if ($timestampA == $timestampB) {
+            return 0;
+        }
+        return ($timestampA < $timestampB) ? -1 : 1;
     }
 
     /**

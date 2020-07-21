@@ -20,10 +20,30 @@ USE `bitcoin`;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `BTCUSD`
+-- Table structure for table `BTCUSD_1d`
 --
 
-CREATE TABLE IF NOT EXISTS `BTCUSD` (
+CREATE TABLE IF NOT EXISTS `BTCUSD_1d` (
+  `timestamp` bigint NOT NULL,
+  `close` decimal(13,3) DEFAULT NULL,
+  PRIMARY KEY (`timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `BTCUSD_1h`
+--
+
+CREATE TABLE IF NOT EXISTS `BTCUSD_1h` (
+  `timestamp` bigint NOT NULL,
+  `close` decimal(13,3) DEFAULT NULL,
+  PRIMARY KEY (`timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `BTCUSD_1m`
+--
+
+CREATE TABLE IF NOT EXISTS `BTCUSD_1m` (
   `timestamp` bigint NOT NULL,
   `close` decimal(13,3) DEFAULT NULL,
   PRIMARY KEY (`timestamp`)
