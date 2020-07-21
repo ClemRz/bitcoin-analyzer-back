@@ -3,9 +3,8 @@
 namespace Controllers;
 
 use Exception;
-use Exceptions\FormatHttpTransactionException;
-use Exceptions\ThirdPartyHttpTransactionException;
 use HttpGateways\YahooGateway;
+use Validators\YahooValidator;
 
 /**
  * Class YahooController
@@ -86,7 +85,8 @@ class YahooController
     {
         $gateway = new YahooGateway($symbol, $startDate, $endDate, $interval);
         $data = $gateway->getData();
-        $this->checkForErrors($data);
+        $validator = new YahooValidator($data);
+        $validator->validate();
         return $this->getTransformedData($data);
     }
 
@@ -100,8 +100,11 @@ class YahooController
     {
         $root = $data["chart"]["result"][0];
         $timestamps = $root["timestamp"];
+        if (is_null($timestamps)) { // No record returned
+            return Array();
+        }
         $closeQuotes = $root["indicators"]["quote"][0]["close"];
-        $dataPoints = array();
+        $dataPoints = Array();
         foreach ($timestamps as $i => $timestamp) {
             array_push($dataPoints, array(
                 "timestamp" => $timestamp,
@@ -109,61 +112,5 @@ class YahooController
             ));
         }
         return $dataPoints;
-    }
-
-    /**
-     * Triggers an exception if there is anything wrong with the data received
-     *
-     * @param $data
-     * @throws Exception
-     */
-    private function checkForErrors($data): void
-    {
-        if (is_null($data)) {
-            throw new ThirdPartyHttpTransactionException("no response or bad response format (expecting json)");
-        }
-        if (!is_array($data)) {
-            throw new FormatHttpTransactionException(sprintf("expected array, found %s instead", gettype($data)));
-        }
-        if (!array_key_exists("chart", $data)) {
-            throw new FormatHttpTransactionException("expected key 'chart' not found");
-        }
-        $chart = $data["chart"];
-        if (array_key_exists("error", $chart)) {
-            $error = $chart["error"];
-            if (!is_null($error)) {
-                throw new ThirdPartyHttpTransactionException("{$error["code"]}: {$error["description"]}");
-            }
-        }
-        if (!array_key_exists("result", $chart)) {
-            throw new FormatHttpTransactionException("expected key 'result' not found");
-        }
-        $result = $chart["result"];
-        if (count($result) !== 1) {
-            throw new FormatHttpTransactionException("no entries in 'result' found");
-        }
-        $root = $result[0];
-        if (!array_key_exists("timestamp", $root)) {
-            throw new FormatHttpTransactionException("expected key 'timestamp' not found");
-        }
-        $timestamp = $root["timestamp"];
-        if (!array_key_exists("indicators", $root)) {
-            throw new FormatHttpTransactionException("expected key 'indicators' not found");
-        }
-        $indicators = $root["indicators"];
-        if (!array_key_exists("quote", $indicators)) {
-            throw new FormatHttpTransactionException("expected key 'quote' not found");
-        }
-        $quote = $indicators["quote"];
-        if (count($quote) !== 1) {
-            throw new FormatHttpTransactionException("no entries in 'quote' found");
-        }
-        if (!array_key_exists("close", $quote[0])) {
-            throw new FormatHttpTransactionException("expected key 'close' not found");
-        }
-        $close = $quote[0]["close"];
-        if (count($close) !== count($timestamp)) {
-            throw new FormatHttpTransactionException("there should be as many items in 'close' as in 'timestamp'");
-        }
     }
 }

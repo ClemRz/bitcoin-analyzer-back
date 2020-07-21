@@ -32,16 +32,16 @@ function run(MysqliDb $db, string $interval): void
     $startDate = getLastSamplesTimestamp($btcUsdGateway);
     $endDate = time();
     $data = getData($startDate, $endDate, $interval);
-    if ($data[0]["timestamp"] === $startDate) {
+    if (!empty($data) && $data[0]["timestamp"] <= $startDate) {
         echo("Ignoring first element which is already present in the database." . PHP_EOL);
         array_shift($data);
     }
-    if (count($data) === 0) {
+    if (empty($data)) {
         echo("Nothing to insert in the database." . PHP_EOL);
     } else {
         $chunkSize = 100;
         echo(sprintf("Inserting %d entries by chunks of %d rows." . PHP_EOL, count($data), $chunkSize));
-        $btcUsdGateway->chunkInsert($data, $chunkSize);
+        $btcUsdGateway->batchInsert($data, $chunkSize);
         echo("Insertion successful." . PHP_EOL);
     }
 }
@@ -55,12 +55,14 @@ function run(MysqliDb $db, string $interval): void
  */
 function getLastSamplesTimestamp(BtcUsdGateway $gateway): int
 {
-    echo("Getting the last entry's date" . PHP_EOL);
+    echo("Getting the last dataPoint's date" . PHP_EOL);
     $data = $gateway->findLatest();
     if ($gateway->getCount() === 0) {
         throw new Exception("Table is empty, Aborting." . PHP_EOL);
     }
-    return $data[0]["timestamp"];
+    $timestamp = $data[0]["timestamp"];
+    echo("Last dataPoint's date: " . date("M j G:i:s Y T", $timestamp) . PHP_EOL);
+    return $timestamp;
 }
 
 /**
@@ -95,7 +97,7 @@ try {
     $intervals = Array(BtcUsdGateway::ONE_DAY, BtcUsdGateway::ONE_HOUR, BtcUsdGateway::ONE_MINUTE);
     foreach ($intervals as $interval) {
         echo("Fetching data with interval {$interval}" . PHP_EOL);
-        run($db, BtcUsdGateway::ONE_DAY);
+        run($db, $interval);
         echo("{$interval} interval data stored." . PHP_EOL);
     }
     echo("Success." . PHP_EOL);

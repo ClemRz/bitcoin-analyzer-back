@@ -37,7 +37,7 @@ function run(MysqliDb $db, string $interval): void
     $data = getAllPossibleData($interval);
     $chunkSize = 100;
     echo(sprintf("Inserting %d entries by chunks of %d rows." . PHP_EOL, count($data), $chunkSize));
-    $btcUsdGateway->chunkInsert($data, $chunkSize);
+    $btcUsdGateway->batchInsert($data, $chunkSize);
 }
 
 /**
@@ -63,7 +63,7 @@ try {
     $intervals = Array(BtcUsdGateway::ONE_DAY, BtcUsdGateway::ONE_HOUR, BtcUsdGateway::ONE_MINUTE);
     foreach ($intervals as $interval) {
         echo("Fetching data with interval {$interval}" . PHP_EOL);
-        run($db, BtcUsdGateway::ONE_DAY);
+        run($db, $interval);
         echo("{$interval} interval data stored." . PHP_EOL);
     }
     echo("Success." . PHP_EOL);

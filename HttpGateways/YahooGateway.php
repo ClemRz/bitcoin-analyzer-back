@@ -3,8 +3,6 @@
 namespace HttpGateways;
 
 use Exception;
-use Exceptions\FormatHttpTransactionException;
-use Exceptions\ThirdPartyHttpTransactionException;
 
 /**
  * Class Yahoo

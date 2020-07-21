@@ -1,11 +1,15 @@
 <?php
 
-namespace Controllers;
+namespace Validators;
 
 use Exceptions\InconsistencyValidationException;
 use Exceptions\WrongValueValidationException;
 
-class ParametersValidator
+/**
+ * Class BctUsdValidator
+ * @package Validators
+ */
+class BctUsdValidator
 {
     /**
      * Unix timestamp

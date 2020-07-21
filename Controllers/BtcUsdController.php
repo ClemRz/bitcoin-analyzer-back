@@ -13,6 +13,7 @@ use Exceptions\WrongValueValidationException;
 use HttpGateways\YahooGateway;
 use MysqliDb;
 use Throwable;
+use Validators\BctUsdValidator;
 
 /**
  * Class BtcUsdController
@@ -101,7 +102,7 @@ class BtcUsdController
      */
     private function getEntriesDynamicInterval($startDate, $endDate): array
     {
-        $validator = new ParametersValidator($startDate, $endDate, YahooGateway::BTC_ORIGIN_OF_TIME);
+        $validator = new BctUsdValidator($startDate, $endDate, YahooGateway::BTC_ORIGIN_OF_TIME);
         $validator->validate();
 
         $startDate = intval($startDate);

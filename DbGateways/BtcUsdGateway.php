@@ -49,8 +49,9 @@ class BtcUsdGateway
      */
     public function findLatest()
     {
-        $this->db->orderBy("timestamp", "desc");
-        return $this->db->get($this->getTableName(), 1);
+        return $this->db
+            ->orderBy("timestamp", "desc")
+            ->get($this->getTableName(), 1);
     }
 
     /**
@@ -77,9 +78,10 @@ class BtcUsdGateway
      */
     public function find(int $startDate, int $endDate)
     {
-        $this->db->where("timestamp", Array($startDate, $endDate), "BETWEEN");
-        $this->db->orderBy("timestamp", "asc");
-        return $this->db->get($this->getTableName());
+        return $this->db
+            ->where("timestamp", Array($startDate, $endDate), "BETWEEN")
+            ->orderBy("timestamp", "asc")
+            ->get($this->getTableName());
     }
 
     /**
@@ -87,13 +89,16 @@ class BtcUsdGateway
      * @param int $chunkSize
      * @throws Exception
      */
-    public function chunkInsert(Array $input, int $chunkSize)
+    public function batchInsert(Array $input, int $chunkSize): void
     {
         $this->db->startTransaction();
         foreach (array_chunk($input, $chunkSize) as $i => $chunk) {
-            if (!$this->db->insertMulti($this->getTableName(), $chunk)) {
+            $insertMulti = $this->db
+                //->setQueryOption("IGNORE") // Not working as expected. Returns error signal when no data is inserted.
+                ->insertMulti($this->getTableName(), $chunk);
+            if (!$insertMulti) {
                 $this->db->rollback();
-                throw new Exception("Error while inserting data in database. Rollback performed.");
+                throw new Exception(sprintf("Error while inserting data in database: %s. Rollback performed.", $this->db->getLastError()));
             }
         }
         $this->db->commit();
