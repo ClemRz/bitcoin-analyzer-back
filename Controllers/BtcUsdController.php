@@ -111,19 +111,12 @@ class BtcUsdController
         $range = $endDate - $startDate;
         $allData = Array();
 
-        if ($range <= 2 * self::DAY) {
-            $data = $this->getEntries($startDate, $endDate, BtcUsdGateway::ONE_MINUTE);
-            $allData = array_merge($data, $allData);
-        }
-
-        if ($range <= 7 * self::DAY) {
-            $data = $this->getEntries($startDate, $endDate, BtcUsdGateway::ONE_HOUR);
-            $allData = array_merge($data, $allData);
-        }
-
-        if ($range > 7 * self::DAY) {
-            $data = $this->getEntries($startDate, $endDate, BtcUsdGateway::ONE_DAY);
-            $allData = array_merge($data, $allData);
+        foreach ($this->getRangeIntervalMap() as $interval => $inRange)
+        {
+            if ($inRange($range)) {
+                $data = $this->getEntries($startDate, $endDate, $interval);
+                $allData = array_merge($data, $allData);
+            }
         }
 
         usort($allData, array('self', 'compare'));
@@ -195,5 +188,25 @@ class BtcUsdController
             "message" => $e->getMessage(),
             "code" => $e->getCode()
         ));
+    }
+
+    /**
+     * Mapping between the granularity of the data to return and the range requested
+     *
+     * @return array
+     */
+    private function getRangeIntervalMap(): array
+    {
+        return Array(
+            BtcUsdGateway::ONE_MINUTE => function ($range) {
+                return $range <= 2 * self::DAY;
+            },
+            BtcUsdGateway::ONE_HOUR => function ($range) {
+                return $range <= 7 * self::DAY;
+            },
+            BtcUsdGateway::ONE_DAY => function ($range) {
+                return $range > 7 * self::DAY;
+            }
+        );
     }
 }
