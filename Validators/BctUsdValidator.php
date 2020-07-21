@@ -12,13 +12,13 @@ use Exceptions\WrongValueValidationException;
 class BctUsdValidator
 {
     /**
-     * Unix timestamp
+     * Start date unix timestamp
      * @var integer
      */
     private $_startDate;
 
     /**
-     * Unix timestamp
+     * End date unix timestamp
      * @var integer
      */
     private $_endDate;
@@ -29,6 +29,13 @@ class BctUsdValidator
      */
     private $_originOfTime;
 
+    /**
+     * BctUsdValidator constructor.
+     *
+     * @param $startDate
+     * @param $endDate
+     * @param $originOfTime
+     */
     public function __construct($startDate, $endDate, $originOfTime)
     {
         $this->_startDate = $startDate;
@@ -38,6 +45,7 @@ class BctUsdValidator
 
     /**
      * Check all the fields for consistency
+     *
      * @throws WrongValueValidationException
      * @throws InconsistencyValidationException
      */
@@ -64,6 +72,8 @@ class BctUsdValidator
     }
 
     /**
+     * Date formatter for exception messages
+     *
      * @param int $unixTimestamp
      * @return false|string
      */

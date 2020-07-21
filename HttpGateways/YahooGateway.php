@@ -45,6 +45,7 @@ class YahooGateway
 
     /**
      * Yahoo constructor.
+     *
      * @param string $symbol the currency pair symbol. E.g. BTC-USD
      * @param int $startDate the start date for the values to retrieve. Unix timestamp.
      * @param int $endDate the end date for the values to retrieve. Unix timestamp.
@@ -71,6 +72,7 @@ class YahooGateway
 
     /**
      * Builds and returns the URL with the parameters
+     *
      * @return string
      */
     private function getUrl(): string
@@ -85,6 +87,7 @@ class YahooGateway
 
     /**
      * Fetches the data
+     *
      * @return string
      */
     private function getResponse(): string

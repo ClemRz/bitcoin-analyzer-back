@@ -27,13 +27,46 @@ class BtcUsdController
     private const HOUR = 60 * self::MINUTE;
     private const DAY = 24 * self::HOUR;
 
+    /**
+     * Instance of DB connection
+     * @var MysqliDb
+     */
     private $_db;
+
+    /**
+     * HTTP method
+     * @var string
+     */
     private $_method;
+
+    /**
+     * HTTP URI
+     * @var string
+     */
     private $_uri;
+
+    /**
+     * Start unix timestamp
+     * @var mixed
+     */
     private $_startDate;
+
+    /**
+     * End unix timestamp
+     * @var mixed
+     */
     private $_endDate;
+
+    /**
+     * Output format
+     * @var mixed
+     */
     private $_format;
 
+    /**
+     * DB gateway
+     * @var BtcUsdGateway
+     */
     private $_btcUsdGateway;
 
     /**

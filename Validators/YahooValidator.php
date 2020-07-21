@@ -9,10 +9,15 @@ use Exceptions\ThirdPartyHttpTransactionException;
 
 class YahooValidator
 {
+    /**
+     * Data to be validated
+     * @var mixed
+     */
     private $_data;
 
     /**
      * YahooValidator constructor.
+     *
      * @param mixed $data
      */
     public function __construct($data)

@@ -36,6 +36,10 @@ class YahooController
         "3mo" => -1
     );
 
+    /**
+     * Data-point interval
+     * @var string
+     */
     private $_interval;
 
     /**

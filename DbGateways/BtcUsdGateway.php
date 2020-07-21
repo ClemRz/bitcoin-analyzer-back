@@ -18,7 +18,16 @@ class BtcUsdGateway
     private const TABLE_PREFIX = "BTCUSD";
     private const TABLE_SUFFIX_WHITELIST = Array(self::ONE_DAY, self::ONE_HOUR, self::ONE_MINUTE);
 
+    /**
+     * Instance of DB connection
+     * @var MysqliDb
+     */
     private $_db;
+
+    /**
+     * Suffix of the table name
+     * @var
+     */
     private $_suffix;
 
     /**
@@ -32,6 +41,8 @@ class BtcUsdGateway
     }
 
     /**
+     * Set which table to control
+     *
      * @param string $suffix
      * @throws Exception
      */
@@ -44,6 +55,8 @@ class BtcUsdGateway
     }
 
     /**
+     * Returns the latest entry in the table
+     *
      * @return array|MysqliDb
      * @throws Exception
      */
@@ -55,6 +68,8 @@ class BtcUsdGateway
     }
 
     /**
+     * Returns the number of rows fetched by the last selection query
+     *
      * @return int
      */
     public function getCount()
@@ -63,6 +78,8 @@ class BtcUsdGateway
     }
 
     /**
+     * Returns the number of rows in the table
+     *
      * @throws Exception
      */
     public function countRows()
@@ -71,6 +88,8 @@ class BtcUsdGateway
     }
 
     /**
+     * Returns the data-points matching the provided date range
+     *
      * @param int $startDate
      * @param int $endDate
      * @return array|MysqliDb
@@ -85,6 +104,8 @@ class BtcUsdGateway
     }
 
     /**
+     * Batch insertion
+     *
      * @param array $input
      * @param int $chunkSize
      * @throws Exception
