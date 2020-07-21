@@ -16,8 +16,6 @@ use Controllers\YahooController;
 use DbGateways\BtcUsdGateway;
 use HttpGateways\YahooGateway;
 
-require(__DIR__ . "/../bootstrap.php");
-
 /**
  * Fetches and stores data for a given interval
  *
