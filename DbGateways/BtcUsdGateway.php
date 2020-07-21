@@ -94,7 +94,7 @@ class BtcUsdGateway
         $this->db->startTransaction();
         foreach (array_chunk($input, $chunkSize) as $i => $chunk) {
             $insertMulti = $this->db
-                //->setQueryOption("IGNORE") // Not working as expected. Returns error signal when no data is inserted.
+                //->setQueryOption("IGNORE") // Not working as expected. Returns error signal when no data is inserted. https://github.com/ThingEngineer/PHP-MySQLi-Database-Class/issues/918
                 ->insertMulti($this->getTableName(), $chunk);
             if (!$insertMulti) {
                 $this->db->rollback();
