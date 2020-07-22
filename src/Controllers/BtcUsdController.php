@@ -92,8 +92,8 @@ class BtcUsdController
     public function processRequest(): void
     {
         try {
-            $tmpParts = explode("/", $this->_uri); // e.g. "/1594789200/1594875600/BTCUSD.json"
-            array_shift($tmpParts); // e.g. ["1594789200", "1594875600", "BTCUSD.json"]
+            $tmpParts = preg_split("/[\/.]/", $this->_uri); // e.g. "/api/1594789200/1594875600/BTCUSD.json"
+            $tmpParts = array_slice($tmpParts, 2); // e.g. ["1594789200", "1594875600", "BTCUSD", "json"]
 
             if (count($tmpParts) < 1 || empty($tmpParts[0])) {
                 throw new MissingParameterApiException("startDate");
@@ -105,12 +105,10 @@ class BtcUsdController
             }
             $this->_endDate = $tmpParts[1];
 
-            $tmpParts = explode(".", $tmpParts[2]); // e.g. ["BTCUSD", "json"]
-
-            if (count($tmpParts) < 2 || empty($tmpParts[1])) {
+            if (count($tmpParts) < 4 || empty($tmpParts[3])) {
                 throw new MissingParameterApiException("format");
             }
-            $this->_format = $tmpParts[1];
+            $this->_format = $tmpParts[3];
 
             switch ($this->_method) {
                 case "GET":
