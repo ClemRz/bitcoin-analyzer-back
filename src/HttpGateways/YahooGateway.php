@@ -92,12 +92,7 @@ class YahooGateway
      */
     private function getResponse(): string
     {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_URL, $this->getUrl());
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
+        return file_get_contents($this->getUrl());
     }
 }
 

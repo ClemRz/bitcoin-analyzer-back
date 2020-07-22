@@ -16,7 +16,7 @@ $uriParts = explode("/", $_SERVER["REQUEST_URI"]);
 $method = $_SERVER["REQUEST_METHOD"];
 $symbol = $uriParts[1];
 
-$db = new MysqliDb($_ENV["DB_HOST"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"], $_ENV["DB_NAME"], $_ENV["DB_PORT"]);
+$db = new MysqliDb($_ENV["DB_HOST"], $_ENV["MYSQL_USER"], $_ENV["MYSQL_PASSWORD"], $_ENV["MYSQL_DATABASE"], $_ENV["DB_PORT"]);
 
 switch (strtoupper($symbol)) {
     case BtcUsdController::SYMBOL:

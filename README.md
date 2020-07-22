@@ -7,7 +7,13 @@ This price analyzer displays a graph with the price trends of the Bitcoin.
 
 The price analyzer fetches historical Bitcoin prices from a public URL (Yahoo). It stores it into a database (cron job). A REST API serves the data to the front-end.
 
-## Deployment
+## Deployment with docker-compose
+
+### Requirements
+
+Docker version `19.03.0+`
+
+## Deployment without Docker
 
 ### tl;dr:
 

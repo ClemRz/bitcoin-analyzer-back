@@ -17,8 +17,8 @@ require(__DIR__ . "/../bootstrap.php");
 require(__DIR__ . "/./{$script}.php");
 
 try {
-    echo(sprintf("Connecting to db %s with user %s on %s:%d." . PHP_EOL, $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_HOST"], $_ENV["DB_PORT"]));
-    $db = new MysqliDb($_ENV["DB_HOST"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"], $_ENV["DB_NAME"], $_ENV["DB_PORT"]);
+    echo(sprintf("Connecting to db %s with user %s on %s:%d." . PHP_EOL, $_ENV["MYSQL_DATABASE"], $_ENV["MYSQL_USER"], $_ENV["DB_HOST"], $_ENV["DB_PORT"]));
+    $db = new MysqliDb($_ENV["DB_HOST"], $_ENV["MYSQL_USER"], $_ENV["MYSQL_PASSWORD"], $_ENV["MYSQL_DATABASE"], $_ENV["DB_PORT"]);
     echo("Connected" . PHP_EOL);
     $intervals = Array(BtcUsdGateway::ONE_DAY, BtcUsdGateway::ONE_HOUR, BtcUsdGateway::ONE_MINUTE);
     foreach ($intervals as $interval) {
