@@ -16,11 +16,17 @@ try {
     require("../bootstrap.php");
 
     header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Methods: OPTIONS,GET,POST,PUT,DELETE");
+    header("Access-Control-Allow-Methods: OPTIONS,GET");
     header("Access-Control-Max-Age: 3600");
     header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
     $method = $_SERVER["REQUEST_METHOD"];
+
+    if ($method === "OPTIONS") {
+        header("Access-Control-Allow-Methods: OPTIONS,GET");
+        exit();
+    }
+
     $uri = $_SERVER["REQUEST_URI"]; // e.g. "/1594789200/1594875600/BTCUSD.json"
 
     $matches = Array();
