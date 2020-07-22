@@ -10,7 +10,7 @@ services:
       - ./src/scripts/sql:/docker-entrypoint-initdb.d
     restart: always
     ports:
-      - 8083:3306
+      - 8082:3306
     networks:
       - ba_ntw
   backserver:
@@ -22,7 +22,7 @@ services:
       - ./src:/var/www/html/
       - ./log:/var/log/
     ports:
-      - 8082:80
+      - 8081:80
     depends_on:
       - dbserver
     networks:
