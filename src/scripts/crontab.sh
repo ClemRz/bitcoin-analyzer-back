@@ -11,6 +11,10 @@ echo "0 0 * * * /usr/local/bin/php /var/www/html/scripts/run.php update >> /var/
 # Registers the new crontab
 crontab /etc/crontab
 
+# Displays crontab
+echo "Cron jobs:"
+less /etc/crontab
+
 # Starts the cron
 /usr/sbin/service cron start
 

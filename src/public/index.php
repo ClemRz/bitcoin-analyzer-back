@@ -38,7 +38,7 @@ try {
             exit();
     }
     $controller->processRequest();
-} catch (Throwable $t) {
+} catch (Throwable $t) { // Handles everything that is not already handled
     error_log($t, 0); // Send the error to Apache's error.log
     header("HTTP/1.1 500 Internal Server Error"); // Obfuscate the error from the WWW
 }
