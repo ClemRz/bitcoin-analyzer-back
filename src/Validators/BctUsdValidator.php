@@ -62,7 +62,7 @@ class BctUsdValidator
         if ($startDate >= $endDate) {
             throw new InconsistencyValidationException("startDate is older than endDate");
         }
-        $endOfTodayUtc = strtotime("tomorrow", gmmktime()) - 1;
+        $endOfTodayUtc = strtotime("tomorrow", time()) - 1;
         if ($endDate > $endOfTodayUtc) {
             throw new InconsistencyValidationException("endDate is in the future");
         }

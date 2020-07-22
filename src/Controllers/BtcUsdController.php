@@ -12,7 +12,6 @@ use Exceptions\ValidationException;
 use Exceptions\WrongValueValidationException;
 use HttpGateways\YahooGateway;
 use MysqliDb;
-use Throwable;
 use Validators\BctUsdValidator;
 
 /**
@@ -87,27 +86,32 @@ class BtcUsdController
 
     /**
      * Processes the request
+     *
+     * @throws Exception
      */
     public function processRequest(): void
     {
         try {
-            $tmpParts = explode("/", $this->_uri);
+            $tmpParts = explode("/", $this->_uri); // e.g. "/1594789200/1594875600/BTCUSD.json"
+            array_shift($tmpParts); // e.g. ["1594789200", "1594875600", "BTCUSD.json"]
 
-            if (count($tmpParts) < 3 || empty($tmpParts[2])) {
+            if (count($tmpParts) < 1 || empty($tmpParts[0])) {
                 throw new MissingParameterApiException("startDate");
             }
-            $this->_startDate = $tmpParts[2];
+            $this->_startDate = $tmpParts[0];
 
-            if (count($tmpParts) < 4 || empty($tmpParts[3])) {
+            if (count($tmpParts) < 2 || empty($tmpParts[1])) {
                 throw new MissingParameterApiException("endDate");
             }
-            $tmpParts = explode(".", $tmpParts[3]);
-            $this->_endDate = $tmpParts[0];
+            $this->_endDate = $tmpParts[1];
+
+            $tmpParts = explode(".", $tmpParts[2]); // e.g. ["BTCUSD", "json"]
 
             if (count($tmpParts) < 2 || empty($tmpParts[1])) {
                 throw new MissingParameterApiException("format");
             }
             $this->_format = $tmpParts[1];
+
             switch ($this->_method) {
                 case "GET":
                     $data = $this->getEntriesDynamicInterval($this->_startDate, $this->_endDate);
@@ -119,9 +123,6 @@ class BtcUsdController
             }
         } catch (ApiException | ValidationException $e) {
             $this->render($this->getErrorResponse($e), $this->_format);
-        } catch (Throwable $e) {
-            // Hide the details of those from the WWW
-            $this->render(Array("error" => Array()), $this->_format);
         }
     }
 
