@@ -13,7 +13,7 @@ services:
       - 8082:3306
     networks:
       - ba_ntw
-  webserver:
+  backserver:
     container_name: ba_back_php73
     image: clemrz/bitcoin-analyzer-back:prod
     build:
@@ -22,7 +22,7 @@ services:
       - ./src:/var/www/html/
       - ./log:/var/log/
     ports:
-      - 8081:80
+      - 80:80
     depends_on:
       - dbserver
     networks:
@@ -33,7 +33,7 @@ services:
     command: ./scripts/wait-for-it.sh ba_back_mysql8:3306 -- php scripts/run.php initialize
     depends_on:
       - dbserver
-      - webserver
+      - backserver
     networks:
       - ba_ntw
   cron:
@@ -41,7 +41,7 @@ services:
     image: clemrz/bitcoin-analyzer-back:prod
     entrypoint: ./scripts/wait-for-it.sh ba_back_php73:80 -- sh ./scripts/crontab.sh
     depends_on:
-      - webserver
+      - backserver
     volumes:
       - ./log:/var/log/
     networks:

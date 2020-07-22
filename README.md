@@ -15,6 +15,13 @@ Docker version `19.03.0+`
 
 ### Steps
 
+Clone this repository on your machine:
+
+```shell script
+$ git clone https://github.com/ClemRz/bitcoin-analyzer-front.git
+$ cd bitcoin-analyzer-front
+```
+
 Make sure you rename `src/.env.example` to `src/.env` and fill in the database access information.
 
 When using docker-compose it is important to set the host and the port accordingly:
@@ -32,7 +39,7 @@ Launch the services:
 $ docker-compose up
 ```
 
-Test the API: http://localhost:8081/1594789200/1594875600/BTCUSD.json
+Test the API: http://localhost/1594789200/1594875600/BTCUSD.json
 
 ## Deployment without Docker
 
