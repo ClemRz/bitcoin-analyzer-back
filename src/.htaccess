@@ -2,8 +2,6 @@ Options +FollowSymLinks
 RewriteEngine On
 RewriteBase /
 
-RewriteRule ^favicon\.ico$ public/resouces/favicon.ico [L]
-
 RewriteCond %{REQUEST_URI} ^/api/ [NC]
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
