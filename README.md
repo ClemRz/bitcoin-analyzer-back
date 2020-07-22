@@ -13,6 +13,27 @@ The price analyzer fetches historical Bitcoin prices from a public URL (Yahoo). 
 
 Docker version `19.03.0+`
 
+### Steps
+
+Make sure you rename `src/.env.example` to `src/.env` and fill in the database access information.
+
+When using docker-compose it is important to set the host and the port accordingly:
+
+```
+DB_HOST=ba_back_mysql8
+DB_PORT=3306
+```
+
+The rest of the `.env` variables can be set as you wish, both the PHP application and Docker will take them into account.
+
+Launch the services:
+
+```shell script
+$ docker-compose up
+```
+
+Test the API: http://localhost:8081/1594789200/1594875600/BTCUSD.json
+
 ## Deployment without Docker
 
 ### tl;dr:
@@ -32,10 +53,10 @@ mysql> GRANT ALL on bitcoin.* to 'db_user'@'db_host';
 mysql> quit
 $ mv src/.env.example src/.env
 $ vim src/.env
-$ mysql -udb_user -p < src/scripts/initialize.sql
+$ mysql -u db_user -p < src/scripts/sql/initialize.sql
 $ php src/scripts/run.php initialize
 $ crontab -e
-$ # add this line: 0 6 * * * php path/to/src/scripts/run.php update
+$ # add this line: 0 0 * * * php path/to/src/scripts/run.php update
 ```
 ### Requirements
 
@@ -53,11 +74,13 @@ $ php composer.phar install
 
 ### Initialization of the database
 
-With the client of your choice execute `src/scripts/initialize.sql`.
+With the client of your choice execute `src/scripts/sql/initialize.sql`.
 This will create the required database, tables and columns.
 
 You will need a MySQL user for this application.
 Once you have this information rename `src/.env.example` to `src/.env` and fill in the database access information.
+
+You do not need to set `MYSQL_ROOT_PASSWORD` if you are not using Docker.
 
 Finally run the initialization script that will fetch and store the historical data:
 
@@ -72,10 +95,10 @@ In order for cached values the database to be up to date there is a script that 
 Add the following line in the crontab:
 
 ```shell script
-0 6 * * * php /path/to/src/scripts/run.php update
+0 0 * * * php /path/to/src/scripts/run.php update
 ```
 
-This will run `src/scripts/run.php update` every day at 6am (cron timezone).
+This will run `src/scripts/run.php update` every day at midnight (cron timezone).
 
 Make sure cron has disk access and `run.php` is executable.
 
@@ -83,14 +106,10 @@ Make sure cron has disk access and `run.php` is executable.
 
  - Protocol: `REST`
  - Endpoint: `/`
- - Format: `/{symbol}/{startDate}/{endDate}.{format}`
+ - Format: `/{startDate}/{endDate}/{symbol}.{format}`
  - Methods: `GET`
  - Authentication: none
  - Required fields:
-   * `symbol`:
-     + Description: Representation of the currencies
-     + Type: string
-     + Available values: `BTC-USD`
    * `startDate`:
      + Description: Unix timestamp (seconds)
      + Type: integer
@@ -99,13 +118,18 @@ Make sure cron has disk access and `run.php` is executable.
      + Description: Unix timestamp (seconds)
      + Type: integer
      + Range: > `startDate`
+   * `symbol`:
+     + Description: Representation of the currencies
+     + Type: string
+     + Available values: `BTC-USD`
    * `format`:
      + Description: desired output format
      + Type: string
      + Available values: `json`
  
  ### Examples
-Request: `/BTCUSD/1595030400/1595203199.json`
+ 
+Request: `/1595030400/1595203199/BTCUSD.json`
 
 Response: 
  ```json
@@ -121,7 +145,7 @@ Response:
 ]
 ```
 ---
-Request: `/BTCUSD/1595203199/1595030400.json`
+Request: `/1595203199/1595030400/BTCUSD.json`
 
 Response: 
  ```json
@@ -132,3 +156,9 @@ Response:
     }
 }
 ```
+
+## Troubleshooting
+
+If you get a `404` or an empty array as a response of the API then maybe something went wrong during the setup.
+
+When using docker-compose, the logs are mapped to the `log` folder at the root of the project (volume). There you will find Apache's and cron's logs.

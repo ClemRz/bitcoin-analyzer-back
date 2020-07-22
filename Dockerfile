@@ -22,10 +22,6 @@ RUN rm composer-setup.php
 # copy the sources
 COPY src/ /var/www/html/
 
-# chages the dbhost according to docker-compose file
-RUN sed -i 's+^DB_HOST=.*$+DB_HOST=ba_back_mysql8+' .env
-RUN sed -i 's+^DB_PORT=.*$+DB_PORT=3306+' .env
-
 # download dependencies
 RUN composer install
 
