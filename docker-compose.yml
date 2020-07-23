@@ -1,13 +1,36 @@
 version: '3.8'
 services:
-  migrations:
-    container_name: ba_back_migrations
+
+  backserver:
+    container_name: ba_back_php73
     image: clemrz/bitcoin-analyzer-back:prod
-    command: ./scripts/wait-for-it.sh ba_back_mysql8:3306 -t 60 -- php scripts/run.php initialize
+    build:
+      context: ./
+    volumes:
+      - ./src:/var/www/html/
+      - ./log:/var/log/
+    ports:
+      - 8081:80
+    networks:
+      - ba_ntw
+
+  cron:
+    container_name: ba_back_cron
+    image: clemrz/bitcoin-analyzer-back:prod
+    entrypoint: ./scripts/wait-for-it.sh ba_back_php73:80 -- sh ./scripts/crontab.sh
+    volumes:
+      - ./log:/var/log/
     networks:
       - ba_ntw
     depends_on:
-      - dbserver
+      - backserver
+
+  composer:
+    container_name: ba_back_composer
+    image: composer:latest
+    command: ["composer", "install"]
+    volumes:
+      - ./src:/app
 
   dbserver:
     container_name: ba_back_mysql8
@@ -22,39 +45,16 @@ services:
       - 8082:3306
     networks:
       - ba_ntw
+
+  migrations:
+    container_name: ba_back_migrations
+    image: clemrz/bitcoin-analyzer-back:prod
+    command: ./scripts/wait-for-it.sh ba_back_mysql8:3306 -t 60 -- ls ./vendor # php scripts/run.php initialize
+    networks:
+      - ba_ntw
     depends_on:
+      - dbserver
       - composer
-
-  composer:
-    container_name: ba_back_composer
-    image: composer:latest
-    command: ["composer", "install"]
-    volumes:
-      - ./src:/app
-
-  cron:
-    container_name: ba_back_cron
-    image: clemrz/bitcoin-analyzer-back:prod
-    entrypoint: ./scripts/wait-for-it.sh ba_back_php73:80 -- sh ./scripts/crontab.sh
-    volumes:
-      - ./log:/var/log/
-    networks:
-      - ba_ntw
-    depends_on:
-      - backserver
-
-  backserver:
-    container_name: ba_back_php73
-    image: clemrz/bitcoin-analyzer-back:prod
-    build:
-      context: ./
-    volumes:
-      - ./src:/var/www/html/
-      - ./log:/var/log/
-    ports:
-      - 8081:80
-    networks:
-      - ba_ntw
 
 networks:
   ba_ntw:
