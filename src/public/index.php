@@ -27,10 +27,10 @@ try {
         exit();
     }
 
-    $uri = $_SERVER["REQUEST_URI"]; // e.g. "/api/1594789200/1594875600/BTCUSD.json"
+    $uri = $_SERVER["REQUEST_URI"]; // e.g. "/api/BTCUSD/1594789200/1594875600"
     $matches = Array();
-    preg_match("/.*\/([^.]+)\./", $uri, $matches);
-    $symbol = empty($matches) ? "" : $matches[1]; // will result in a 404 if extension (.<format>) is missing from the URI
+    preg_match("/\/api\/([^.\/]+)/", $uri, $matches);
+    $symbol = empty($matches) ? "" : $matches[1]; // will result in a 404 if symbol is not provided
 
     $db = new MysqliDb($_ENV["DB_HOST"], $_ENV["MYSQL_USER"], $_ENV["MYSQL_PASSWORD"], $_ENV["MYSQL_DATABASE"], $_ENV["DB_PORT"]);
 

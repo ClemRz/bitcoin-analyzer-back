@@ -39,7 +39,7 @@ Launch the services:
 $ docker-compose up
 ```
 
-Test the API: http://localhost:8081/api/1594789200/1594875600/BTCUSD.json
+Test the API: http://localhost:8081/api/BTCUSD/1594789200/1594875600
 
 ## Deployment without Docker
 
@@ -112,10 +112,14 @@ Make sure cron has disk access and `run.php` is executable.
 
  - Protocol: `REST`
  - Endpoint: `/`
- - URL format: `/api/{startDate}/{endDate}/{symbol}.{format}`
+ - URL format: `/api/{symbol}/{startDate}/{endDate}`
  - Methods: `GET`
  - Authentication: none
  - Mandatory fields:
+   * `symbol`:
+     + Description: Representation of the currencies
+     + Type: string
+     + Available values: `BTCUSD`
    * `startDate`:
      + Description: Unix timestamp (seconds)
      + Type: integer
@@ -124,18 +128,10 @@ Make sure cron has disk access and `run.php` is executable.
      + Description: Unix timestamp (seconds)
      + Type: integer
      + Range: > `startDate`
-   * `symbol`:
-     + Description: Representation of the currencies
-     + Type: string
-     + Available values: `BTC-USD`
-   * `format`:
-     + Description: desired output format
-     + Type: string
-     + Available values: `json`
  
  ### Examples
  
-Request: `/api/1595030400/1595203199/BTCUSD.json`
+Request: `/api/BTCUSD/1595030400/1595203199`
 
 Response: 
  ```json
@@ -151,7 +147,7 @@ Response:
 ]
 ```
 ---
-Request: `/api/1595203199/1595030400/BTCUSD.json`
+Request: `/api/BTCUSD/1595203199/1595030400`
 
 Response: 
  ```json

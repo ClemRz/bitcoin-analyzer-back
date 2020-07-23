@@ -7,7 +7,6 @@ use Exception;
 use Exceptions\ApiException;
 use Exceptions\InconsistencyValidationException;
 use Exceptions\MissingParameterApiException;
-use Exceptions\UnsupportedValueApiException;
 use Exceptions\ValidationException;
 use Exceptions\WrongValueValidationException;
 use HttpGateways\YahooGateway;
@@ -57,12 +56,6 @@ class BtcUsdController
     private $_endDate;
 
     /**
-     * Output format
-     * @var mixed
-     */
-    private $_format;
-
-    /**
      * DB gateway
      * @var BtcUsdGateway
      */
@@ -92,8 +85,8 @@ class BtcUsdController
     public function processRequest(): void
     {
         try {
-            $tmpParts = preg_split("/[\/.]/", $this->_uri); // e.g. "/api/1594789200/1594875600/BTCUSD.json"
-            $tmpParts = array_slice($tmpParts, 2); // e.g. ["1594789200", "1594875600", "BTCUSD", "json"]
+            $tmpParts = preg_split("/[\/]/", $this->_uri); // e.g. "/api/BTCUSD/1594789200/1594875600"
+            $tmpParts = array_slice($tmpParts, 3); // e.g. ["1594789200", "1594875600"]
 
             if (count($tmpParts) < 1 || empty($tmpParts[0])) {
                 throw new MissingParameterApiException("startDate");
@@ -105,22 +98,17 @@ class BtcUsdController
             }
             $this->_endDate = $tmpParts[1];
 
-            if (count($tmpParts) < 4 || empty($tmpParts[3])) {
-                throw new MissingParameterApiException("format");
-            }
-            $this->_format = $tmpParts[3];
-
             switch ($this->_method) {
                 case "GET":
                     $data = $this->getEntriesDynamicInterval($this->_startDate, $this->_endDate);
-                    $this->render($data, $this->_format);
+                    $this->render($data);
                     break;
                 default:
                     header("HTTP/1.1 404 Not Found");
                     break;
             }
         } catch (ApiException | ValidationException $e) {
-            $this->render($this->getErrorResponse($e), $this->_format);
+            $this->render($this->getErrorResponse($e));
         }
     }
 
@@ -190,23 +178,15 @@ class BtcUsdController
     }
 
     /**
-     * Renders the data in the specified format when available
+     * Renders the data as a json
      *
      * @param array $data
-     * @param string|null $format
      */
-    private function render(Array $data, $format): void
+    private function render(Array $data): void
     {
-        switch ($format) {
-            case null:
-            case "json":
-                header("HTTP/1.1 200 OK");
-                header("Content-Type: application/json; charset=UTF-8");
-                echo json_encode($data);
-                break;
-            default:
-                $this->render($this->getErrorResponse(new UnsupportedValueApiException("format")), "json");
-        }
+        header("HTTP/1.1 200 OK");
+        header("Content-Type: application/json; charset=UTF-8");
+        echo json_encode($data);
     }
 
     /**
