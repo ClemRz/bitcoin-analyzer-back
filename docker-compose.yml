@@ -1,5 +1,14 @@
 version: '3.8'
 services:
+  migrations:
+    container_name: ba_back_migrations
+    image: clemrz/bitcoin-analyzer-back:prod
+    command: ./scripts/wait-for-it.sh ba_back_mysql8:3306 -t 60 -- php scripts/run.php initialize
+    networks:
+      - ba_ntw
+    depends_on:
+      - dbserver
+
   dbserver:
     container_name: ba_back_mysql8
     env_file:
@@ -13,6 +22,26 @@ services:
       - 8082:3306
     networks:
       - ba_ntw
+    depends_on:
+      - composer
+
+  composer:
+    container_name: ba_back_composer
+    image: composer:latest
+    command: ["composer", "install"]
+    volumes:
+      - ./src:/app
+
+  cron:
+    container_name: ba_back_cron
+    image: clemrz/bitcoin-analyzer-back:prod
+    entrypoint: ./scripts/wait-for-it.sh ba_back_php73:80 -- sh ./scripts/crontab.sh
+    volumes:
+      - ./log:/var/log/
+    networks:
+      - ba_ntw
+    depends_on:
+      - backserver
 
   backserver:
     container_name: ba_back_php73
@@ -24,36 +53,6 @@ services:
       - ./log:/var/log/
     ports:
       - 8081:80
-    depends_on:
-      - dbserver
-    networks:
-      - ba_ntw
-
-  composer:
-    container_name: ba_back_composer
-    image: composer:latest
-    command: ["composer", "install"]
-    volumes:
-      - ./src:/app
-
-  migrations:
-    container_name: ba_back_migrations
-    image: clemrz/bitcoin-analyzer-back:prod
-    command: ./scripts/wait-for-it.sh ba_back_mysql8:3306 -- php scripts/run.php initialize
-    depends_on:
-      - dbserver
-      - composer
-    networks:
-      - ba_ntw
-
-  cron:
-    container_name: ba_back_cron
-    image: clemrz/bitcoin-analyzer-back:prod
-    entrypoint: ./scripts/wait-for-it.sh ba_back_php73:80 -- sh ./scripts/crontab.sh
-    depends_on:
-      - backserver
-    volumes:
-      - ./log:/var/log/
     networks:
       - ba_ntw
 
