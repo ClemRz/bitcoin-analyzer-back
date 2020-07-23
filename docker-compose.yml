@@ -49,12 +49,15 @@ services:
   migrations:
     container_name: ba_back_migrations
     image: clemrz/bitcoin-analyzer-back:prod
-    command: ./scripts/wait-for-it.sh ba_back_mysql8:3306 -t 60 -- ls ./vendor # php scripts/run.php initialize
+    command: ./scripts/wait-for-it.sh ba_back_mysql8:3306 -t 60 -- php scripts/run.php initialize
+    volumes:
+      - ./src:/var/www/html/
     networks:
       - ba_ntw
     depends_on:
       - dbserver
       - composer
+      - backserver
 
 networks:
   ba_ntw:
