@@ -109,14 +109,14 @@ This will run `src/scripts/run.php update` every day at midnight (cron timezone)
 
 Make sure cron has disk access and `run.php` is executable.
 
-## API documentation
+## API reference
 
  - Protocol: `REST`
  - Endpoint: `/`
- - Format: `/api/{startDate}/{endDate}/{symbol}.{format}`
+ - URL format: `/api/{startDate}/{endDate}/{symbol}.{format}`
  - Methods: `GET`
  - Authentication: none
- - Required fields:
+ - Mandatory fields:
    * `startDate`:
      + Description: Unix timestamp (seconds)
      + Type: integer
